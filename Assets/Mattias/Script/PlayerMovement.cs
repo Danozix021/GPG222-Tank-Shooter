@@ -4,17 +4,28 @@ using Unity.Netcode;
 public class PlayerMovement : NetworkBehaviour
 {
     public float speed = 5f;
-    public float rotationSpeed = 200f;
+    private Rigidbody2D rb;
+    private Vector2 moveInput;
+
+    void Awake()
+    {
+        rb = GetComponent<Rigidbody2D>();
+    }
 
     void Update()
     {
-        // Only control YOUR player
+        if (!IsOwner) return; // Only owner can give input
+
+        float x = Input.GetAxis("Horizontal");
+        float y = Input.GetAxis("Vertical");
+
+        moveInput = new Vector2(x, y) * speed;
+    }
+
+    void FixedUpdate()
+    {
         if (!IsOwner) return;
 
-        float move = Input.GetAxis("Vertical");
-        float rotate = -Input.GetAxis("Horizontal");
-
-        transform.Translate(Vector2.up * move * speed * Time.deltaTime);
-        transform.Rotate(Vector3.forward * rotate * rotationSpeed * Time.deltaTime);
+        rb.MovePosition(rb.position + moveInput * Time.fixedDeltaTime);
     }
 }

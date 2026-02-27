@@ -5,7 +5,8 @@ public class NetworkUI : MonoBehaviour
 {
     void OnGUI()
     {
-        // If we are NOT connected yet
+        if (NetworkManager.Singleton == null) return;
+
         if (!NetworkManager.Singleton.IsClient && !NetworkManager.Singleton.IsServer)
         {
             if (GUI.Button(new Rect(10, 10, 100, 30), "Host"))
