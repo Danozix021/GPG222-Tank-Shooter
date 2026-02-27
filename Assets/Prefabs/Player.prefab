@@ -49,7 +49,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 2593842595
+  GlobalObjectIdHash: 3314418263
   InScenePlacedSourceGlobalObjectIdHash: 3314418263
   DeferredDespawnTick: 0
   Ownership: 1
@@ -76,6 +76,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   speed: 5
+  turret: {fileID: 6113492810660113270}
 --- !u!114 &5154324224596073220
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -145,7 +146,7 @@ Rigidbody2D:
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
