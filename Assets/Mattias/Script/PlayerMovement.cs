@@ -9,7 +9,7 @@ public class PlayerMovement : NetworkBehaviour
     private Vector2 moveInput;
 
     [Header("Turret")]
-    public Transform turret; // Assign in inspector
+    public Transform turret; 
 
     void Awake()
     {
@@ -20,14 +20,14 @@ public class PlayerMovement : NetworkBehaviour
 
     void Update()
     {
-        if (!IsOwner) return; // Only owner can give input
+        if (!IsOwner) return; //Only owner can give input
 
-        // --- Movement Input ---
+        //Movement Input
         float x = Input.GetAxis("Horizontal");
         float y = Input.GetAxis("Vertical");
         moveInput = new Vector2(x, y) * speed;
 
-        // --- Turret Aim ---
+        //Turret Aim 
         if (turret != null)
         {
             Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -41,7 +41,6 @@ public class PlayerMovement : NetworkBehaviour
     {
         if (!IsOwner) return;
 
-        // Move the tank
         rb.MovePosition(rb.position + moveInput * Time.fixedDeltaTime);
     }
 }
