@@ -31,13 +31,13 @@ public class PlayerMovement : NetworkBehaviour
             Debug.LogWarning("Turret transform not assigned!");
         }
 
-        Debug.Log("Player spawned -> " +
-                 "Object name: " + gameObject.name +
-                 " | OwnerClientId: " + OwnerClientId +
-                 " | LocalClientId: " + NetworkManager.Singleton.LocalClientId +
-                 " | IsOwner: " + IsOwner +
-                 " | IsServer: " + IsServer +
-                 " | IsClient: " + IsClient);
+        //Debug.Log("Player spawned -> " +
+        //         "Object name: " + gameObject.name +
+        //         " | OwnerClientId: " + OwnerClientId +
+        //         " | LocalClientId: " + NetworkManager.Singleton.LocalClientId +
+        //         " | IsOwner: " + IsOwner +
+        //         " | IsServer: " + IsServer +
+        //         " | IsClient: " + IsClient);
     }
 
     void Update()
@@ -55,7 +55,7 @@ public class PlayerMovement : NetworkBehaviour
 
             Vector2 direction = mousePos - turret.position;
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-            turret.rotation = Quaternion.Euler(0, 0, angle);
+            turret.rotation = Quaternion.Euler(0, 0, angle - 92f);
         }
     }
 
