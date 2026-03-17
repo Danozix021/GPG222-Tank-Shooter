@@ -32,4 +32,33 @@ public class Bullet : NetworkBehaviour
             NetworkObject.Despawn(true);
         }
     }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (!IsServer) return;
+
+        if (other.CompareTag("Player"))
+        {
+            Debug.Log("Bullet hit player: " + other.name);
+
+            // Later: apply damage here
+
+            DespawnBullet();
+            return;
+        }
+
+        if (other.CompareTag("Wall"))
+        {
+            Debug.Log("Bullet hit wall: " + other.name);
+            DespawnBullet();
+        }
+
+        void DespawnBullet()
+        {
+            if (IsServer && NetworkObject != null && NetworkObject.IsSpawned)
+            {
+                NetworkObject.Despawn(true);
+            }
+        }
+    }
 }
