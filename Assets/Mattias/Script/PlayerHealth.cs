@@ -6,23 +6,12 @@ public class PlayerHealth : NetworkBehaviour
     public int maxHealth = 100;
     public NetworkVariable<int> currentHealth = new NetworkVariable<int>();
 
-    
-    public NetworkVariable<Vector3> networkPosition = new NetworkVariable<Vector3>();
-
-    private void Awake()
-    {
-        currentHealth.Value = maxHealth;
-    }
-
     private void Start()
     {
-        //Subscribe to position changes
-        networkPosition.OnValueChanged += OnPositionChanged;
-    }
-
-    private void OnPositionChanged(Vector3 oldPos, Vector3 newPos)
-    {
-        transform.position = newPos;
+        if (IsServer)
+        {
+            currentHealth.Value = maxHealth;
+        }
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -31,7 +20,7 @@ public class PlayerHealth : NetworkBehaviour
         if (!IsServer) return;
 
         currentHealth.Value -= damage;
-        Debug.Log($"{gameObject.name} took {damage} damage! Current Health: {currentHealth.Value}");
+        Debug.Log(gameObject.name + " took " + damage + " damage");
 
         if (currentHealth.Value <= 0)
         {
@@ -41,15 +30,19 @@ public class PlayerHealth : NetworkBehaviour
 
     private void Die()
     {
-        Debug.Log($"{gameObject.name} died!");
+        Debug.Log(gameObject.name + " died");
 
-        //Choose a random respawn position
-        Vector3 respawnPosition = new Vector3(Random.Range(-5f, 5f), Random.Range(-5f, 5f), 0f);
+        // Simple respawn
+        Vector3 respawnPosition = new Vector3(
+            Random.Range(-5f, 5f),
+            Random.Range(-5f, 5f),
+            0f
+        );
 
-        //Update the NetworkVariable to sync with all clients
-        networkPosition.Value = respawnPosition;
+        // Move player (NetworkTransform will sync this)
+        transform.position = respawnPosition;
 
-        //Reset health
+        // Reset health
         currentHealth.Value = maxHealth;
     }
 }
