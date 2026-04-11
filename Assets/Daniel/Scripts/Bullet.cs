@@ -37,7 +37,7 @@ public class Bullet : NetworkBehaviour
     {
         if (!IsServer) return;
 
-        // Check if bullet hit a player
+        //Check if bullet hit a player
         if (other.CompareTag("Player"))
         {
             PlayerHealth playerHealth = other.GetComponent<PlayerHealth>();
@@ -50,13 +50,13 @@ public class Bullet : NetworkBehaviour
             return;
         }
 
-        // Check if bullet hit a wall
+        //Check if bullet hit a wall
         if (other.CompareTag("Wall"))
         {
             DespawnBullet();
         }
 
-        // Local function to despawn bullet
+        //Local function to despawn bullet
         void DespawnBullet()
         {
             if (IsServer && NetworkObject != null && NetworkObject.IsSpawned)
