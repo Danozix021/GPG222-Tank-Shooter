@@ -46,10 +46,10 @@ public class PauseManager : NetworkBehaviour
     }
 
     //Restart button
-    public void RestartGame()
-    {
-        RestartGameServerRpc();
-    }
+    //public void RestartGame()
+    //{
+    //    RestartGameServerRpc();
+    //}
 
     [ServerRpc(RequireOwnership = false)]
     private void RestartGameServerRpc()
