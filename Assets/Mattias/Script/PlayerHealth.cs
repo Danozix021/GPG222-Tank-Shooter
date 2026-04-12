@@ -11,7 +11,6 @@ public class PlayerHealth : NetworkBehaviour
 
     private void Start()
     {
-        Die();
         if (IsServer)
         {
             currentHealth.Value = maxHealth;
@@ -22,7 +21,6 @@ public class PlayerHealth : NetworkBehaviour
     public void TakeDamageRpc(int damage)
     {
         if (!IsServer) return;
-
         if (isInvulnerable) return;
 
         currentHealth.Value -= damage;
@@ -39,11 +37,8 @@ public class PlayerHealth : NetworkBehaviour
         Debug.Log(gameObject.name + " died");
 
         Vector3 respawnPosition = GetSpawnPointPosition();
-
-        
         currentHealth.Value = maxHealth;
 
-        
         RespawnClientRpc(respawnPosition);
     }
 
@@ -57,7 +52,6 @@ public class PlayerHealth : NetworkBehaviour
             return Vector3.zero;
         }
 
-        
         int index = (int)(OwnerClientId % (ulong)spawnPoints.Length);
         return spawnPoints[index].transform.position;
     }
@@ -69,12 +63,7 @@ public class PlayerHealth : NetworkBehaviour
         StartCoroutine(InvulnerabilityCoroutine());
     }
 
-       
-
-    [ClientRpc]
-
-
-    private System.Collections.IEnumerator InvulnerabilityCoroutine()
+    private IEnumerator InvulnerabilityCoroutine()
     {
         isInvulnerable = true;
         Debug.Log(gameObject.name + " is invulnerable");
@@ -84,5 +73,4 @@ public class PlayerHealth : NetworkBehaviour
         isInvulnerable = false;
         Debug.Log(gameObject.name + " is no longer invulnerable");
     }
-    
 }
