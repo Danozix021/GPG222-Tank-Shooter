@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections;
 using Unity.Netcode;
 
 public class PlayerHealth : NetworkBehaviour
@@ -65,28 +66,23 @@ public class PlayerHealth : NetworkBehaviour
     private void RespawnClientRpc(Vector3 respawnPosition)
     {
         transform.position = respawnPosition;
+        StartCoroutine(InvulnerabilityCoroutine());
     }
 
-    StartCoroutine(InvulnerabilityCoroutine());
-}
+       
 
-[ClientRpc]
-private void RespawnClientRpc(Vector3 position)
-{
-    //Only move the owner of this object
-    if (!IsOwner) return;
+    [ClientRpc]
 
-    transform.position = position;
-}
 
-private System.Collections.IEnumerator InvulnerabilityCoroutine()
-{
-    isInvulnerable = true;
-    Debug.Log(gameObject.name + " is invulnerable");
+    private System.Collections.IEnumerator InvulnerabilityCoroutine()
+    {
+        isInvulnerable = true;
+        Debug.Log(gameObject.name + " is invulnerable");
 
-    yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(3f);
 
-    isInvulnerable = false;
-    Debug.Log(gameObject.name + " is no longer invulnerable");
-}
+        isInvulnerable = false;
+        Debug.Log(gameObject.name + " is no longer invulnerable");
+    }
+    
 }
