@@ -10,7 +10,7 @@ public class HealthUI : MonoBehaviour
 
     void Update()
     {
-        // If we don't have a player yet, try to find our own
+        //If we don't have a player yet, try to find our own
         if (playerHealth == null)
         {
             foreach (var player in FindObjectsOfType<PlayerHealth>())
@@ -23,10 +23,10 @@ public class HealthUI : MonoBehaviour
             }
         }
 
-        // If still no player, stop
+        //If still no player, stop
         if (playerHealth == null) return;
 
-        // Update UI
+        //Update UI
         healthText.text = "Health: " + playerHealth.currentHealth.Value;
     }
 }

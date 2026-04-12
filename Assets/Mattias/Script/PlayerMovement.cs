@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using Unity.Netcode;
 
 [RequireComponent(typeof(Rigidbody2D))]
@@ -13,6 +13,11 @@ public class PlayerMovement : NetworkBehaviour
     public Transform turret;
 
     private Camera cam;
+
+    
+    private bool hasSpeedBoost = false;
+    private bool isBoostActive = false;
+    private float originalSpeed;
 
     void Awake()
     {
@@ -30,24 +35,25 @@ public class PlayerMovement : NetworkBehaviour
         {
             Debug.LogWarning("Turret transform not assigned!");
         }
-
         //Debug.Log("Player spawned -> " +
         //         "Object name: " + gameObject.name +
         //         " | OwnerClientId: " + OwnerClientId +
         //         " | LocalClientId: " + NetworkManager.Singleton.LocalClientId +
         //         " | IsOwner: " + IsOwner +
         //         " | IsServer: " + IsServer +
-        //         " | IsClient: " + IsClient);
+        //      
     }
 
     void Update()
     {
         if (!IsOwner) return;
 
+        //Movement input
         float x = Input.GetAxis("Horizontal");
         float y = Input.GetAxis("Vertical");
         moveInput = new Vector2(x, y).normalized * speed;
 
+        //Turret rotation
         if (turret != null && cam != null)
         {
             Vector3 mousePos = cam.ScreenToWorldPoint(Input.mousePosition);
@@ -57,6 +63,12 @@ public class PlayerMovement : NetworkBehaviour
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
             turret.rotation = Quaternion.Euler(0, 0, angle - 92f);
         }
+
+        //Activate speed boost with Space
+        if (hasSpeedBoost && Input.GetKeyDown(KeyCode.Space))
+        {
+            ActivateSpeedBoostServerRpc();
+        }
     }
 
     void FixedUpdate()
@@ -64,5 +76,50 @@ public class PlayerMovement : NetworkBehaviour
         if (!IsOwner) return;
 
         rb.MovePosition(rb.position + moveInput * Time.fixedDeltaTime);
+    }
+
+    //when picking up power-up
+    [ClientRpc]
+    public void GiveSpeedBoostClientRpc()
+    {
+        if (!IsOwner) return;
+
+        hasSpeedBoost = true;
+        Debug.Log("Picked up speed boost!");
+    }
+
+    //Tell server to activate boost
+    [ServerRpc]
+    private void ActivateSpeedBoostServerRpc()
+    {
+        ActivateSpeedBoostClientRpc();
+    }
+
+    //Activate boost on client
+    [ClientRpc]
+    private void ActivateSpeedBoostClientRpc()
+    {
+        if (!IsOwner || isBoostActive) return;
+
+        StartCoroutine(SpeedBoostCoroutine());
+    }
+
+    //Speed boost logic
+    private System.Collections.IEnumerator SpeedBoostCoroutine()
+    {
+        isBoostActive = true;
+        hasSpeedBoost = false;
+
+        originalSpeed = speed;
+        speed = speed * 2f;
+
+        Debug.Log("Speed boost activated!");
+
+        yield return new WaitForSeconds(3f);
+
+        speed = originalSpeed;
+        isBoostActive = false;
+
+        Debug.Log("Speed boost ended");
     }
 }

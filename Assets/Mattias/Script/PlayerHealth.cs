@@ -1,10 +1,12 @@
-using UnityEngine;
+﻿using UnityEngine;
 using Unity.Netcode;
 
 public class PlayerHealth : NetworkBehaviour
 {
     public int maxHealth = 100;
     public NetworkVariable<int> currentHealth = new NetworkVariable<int>();
+
+    private bool isInvulnerable = false;
 
     private void Start()
     {
@@ -19,6 +21,8 @@ public class PlayerHealth : NetworkBehaviour
     public void TakeDamageRpc(int damage)
     {
         if (!IsServer) return;
+
+        if (isInvulnerable) return;
 
         currentHealth.Value -= damage;
         Debug.Log(gameObject.name + " took " + damage + " damage");
@@ -62,4 +66,27 @@ public class PlayerHealth : NetworkBehaviour
     {
         transform.position = respawnPosition;
     }
+
+    StartCoroutine(InvulnerabilityCoroutine());
+}
+
+[ClientRpc]
+private void RespawnClientRpc(Vector3 position)
+{
+    //Only move the owner of this object
+    if (!IsOwner) return;
+
+    transform.position = position;
+}
+
+private System.Collections.IEnumerator InvulnerabilityCoroutine()
+{
+    isInvulnerable = true;
+    Debug.Log(gameObject.name + " is invulnerable");
+
+    yield return new WaitForSeconds(3f);
+
+    isInvulnerable = false;
+    Debug.Log(gameObject.name + " is no longer invulnerable");
+}
 }
