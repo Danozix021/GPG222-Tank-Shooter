@@ -3,10 +3,12 @@ using Unity.Netcode;
 
 public class Bullet : NetworkBehaviour
 {
-    public float speed = 10f;
-    public float lifeTime = 2f;
-
     private Rigidbody2D rb;
+
+    public float speed;
+    public float lifeTime;
+    public int damage;
+    public ulong shooterClientId;
 
     void Awake()
     {
@@ -19,17 +21,7 @@ public class Bullet : NetworkBehaviour
 
         if (IsServer)
         {
-            DestroyBulletAfterTime();
-        }
-    }
-
-    private async void DestroyBulletAfterTime()
-    {
-        await System.Threading.Tasks.Task.Delay((int)(lifeTime * 1000));
-
-        if (this != null && IsServer && NetworkObject != null && NetworkObject.IsSpawned)
-        {
-            NetworkObject.Despawn(true);
+            Invoke(nameof(DespawnBullet), lifeTime);
         }
     }
 
@@ -37,32 +29,35 @@ public class Bullet : NetworkBehaviour
     {
         if (!IsServer) return;
 
-        // Check if bullet hit a player
+        NetworkObject otherNetObj = other.GetComponentInParent<NetworkObject>();
+        if (otherNetObj != null && otherNetObj.OwnerClientId == shooterClientId)
+        {
+            return;
+        }
+
         if (other.CompareTag("Player"))
         {
-            PlayerHealth playerHealth = other.GetComponent<PlayerHealth>();
-            if (playerHealth != null)
+            PlayerHealth health = other.GetComponentInParent<PlayerHealth>();
+            if (health != null)
             {
-                playerHealth.TakeDamageServerRpc(25); // Deal 25 damage
+                health.TakeDamageRpc(damage);
             }
 
             DespawnBullet();
             return;
         }
 
-        // Check if bullet hit a wall
         if (other.CompareTag("Wall"))
         {
             DespawnBullet();
         }
+    }
 
-        // Local function to despawn bullet
-        void DespawnBullet()
+    private void DespawnBullet()
+    {
+        if (IsServer && NetworkObject != null && NetworkObject.IsSpawned)
         {
-            if (IsServer && NetworkObject != null && NetworkObject.IsSpawned)
-            {
-                NetworkObject.Despawn(true);
-            }
+            NetworkObject.Despawn(true);
         }
     }
 }

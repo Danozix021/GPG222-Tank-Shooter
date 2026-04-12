@@ -8,14 +8,15 @@ public class PlayerHealth : NetworkBehaviour
 
     private void Start()
     {
+        Die();
         if (IsServer)
         {
             currentHealth.Value = maxHealth;
         }
     }
 
-    [ServerRpc(RequireOwnership = false)]
-    public void TakeDamageServerRpc(int damage)
+    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
+    public void TakeDamageRpc(int damage)
     {
         if (!IsServer) return;
 
@@ -32,17 +33,33 @@ public class PlayerHealth : NetworkBehaviour
     {
         Debug.Log(gameObject.name + " died");
 
-        // Simple respawn
-        Vector3 respawnPosition = new Vector3(
-            Random.Range(-5f, 5f),
-            Random.Range(-5f, 5f),
-            0f
-        );
+        Vector3 respawnPosition = GetSpawnPointPosition();
 
-        // Move player (NetworkTransform will sync this)
-        transform.position = respawnPosition;
-
-        // Reset health
+        
         currentHealth.Value = maxHealth;
+
+        
+        RespawnClientRpc(respawnPosition);
+    }
+
+    private Vector3 GetSpawnPointPosition()
+    {
+        GameObject[] spawnPoints = GameObject.FindGameObjectsWithTag("SpawnPoint");
+
+        if (spawnPoints.Length == 0)
+        {
+            Debug.LogWarning("No spawn points found! Respawning at (0,0,0)");
+            return Vector3.zero;
+        }
+
+        
+        int index = (int)(OwnerClientId % (ulong)spawnPoints.Length);
+        return spawnPoints[index].transform.position;
+    }
+
+    [ClientRpc]
+    private void RespawnClientRpc(Vector3 respawnPosition)
+    {
+        transform.position = respawnPosition;
     }
 }
