@@ -1,23 +1,21 @@
 using UnityEngine;
-using Unity.Netcode;
 
 public class NetworkUI : MonoBehaviour
 {
+    string joinCode = "";
+
     void OnGUI()
     {
-        if (NetworkManager.Singleton == null) return;
-
-        if (!NetworkManager.Singleton.IsClient && !NetworkManager.Singleton.IsServer)
+        if (GUI.Button(new Rect(10, 10, 150, 40), "HOST"))
         {
-            if (GUI.Button(new Rect(10, 10, 100, 30), "Host"))
-            {
-                NetworkManager.Singleton.StartHost();
-            }
+            RelayManager.Instance.CreateRelay();
+        }
 
-            if (GUI.Button(new Rect(10, 50, 100, 30), "Client"))
-            {
-                NetworkManager.Singleton.StartClient();
-            }
+        joinCode = GUI.TextField(new Rect(10, 60, 200, 30), joinCode);
+
+        if (GUI.Button(new Rect(10, 100, 150, 40), "JOIN"))
+        {
+            RelayManager.Instance.JoinRelay(joinCode);
         }
     }
 }
