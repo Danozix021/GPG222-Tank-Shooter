@@ -13,6 +13,9 @@ public class RelayManager : MonoBehaviour
 
     public UnityTransport transport;
 
+    public string currentJoinCode = "";
+    public bool showCode = false;
+
     private void Awake()
     {
         Instance = this;
@@ -26,10 +29,13 @@ public class RelayManager : MonoBehaviour
 
     public async void CreateRelay()
     {
-        Allocation allocation = await RelayService.Instance.CreateAllocationAsync(4);
-        string joinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
+        Allocation allocation = await RelayService.Instance.CreateAllocationAsync(2);
 
-        Debug.Log("JOIN CODE: " + joinCode);
+        currentJoinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
+
+        showCode = true;
+
+        Debug.Log("JOIN CODE: " + currentJoinCode);
 
         transport.SetHostRelayData(
             allocation.RelayServer.IpV4,
@@ -56,5 +62,17 @@ public class RelayManager : MonoBehaviour
         );
 
         NetworkManager.Singleton.StartClient();
+    }
+
+    void Update()
+    {
+        if (!NetworkManager.Singleton.IsListening) return;
+
+        int playerCount = NetworkManager.Singleton.ConnectedClients.Count;
+
+        if (playerCount >= 2)
+        {
+            showCode = false;
+        }
     }
 }
