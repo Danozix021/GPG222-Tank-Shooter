@@ -19,7 +19,7 @@ public class PauseManager : NetworkBehaviour
         }
     }
 
-    //Toggle pause from client → server
+    //Toggle pause from client - server
     [ServerRpc(RequireOwnership = false)]
     private void TogglePauseServerRpc()
     {
