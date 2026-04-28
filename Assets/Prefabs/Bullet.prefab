@@ -29,13 +29,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2702253599641732513}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0.5, y: 0.5, z: -0.5, w: 0.5}
   m_LocalPosition: {x: -4.279, y: 1.789, z: 0}
-  m_LocalScale: {x: 0.2, y: 0.2, z: 0.2}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 90, y: 90, z: 0}
 --- !u!212 &8190058047692925567
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -80,7 +80,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 78962bb49adc39947a1479995e741412, type: 3}
   m_Color: {r: 1, g: 0.94052273, b: 0.3254717, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -131,6 +131,8 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   speed: 10
   lifeTime: 2
+  damage: 0
+  shooterClientId: 0
 --- !u!50 &-6628312388863741906
 Rigidbody2D:
   serializedVersion: 5
