@@ -3426,7 +3426,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   pickupPrefab: {fileID: 246161642269319695, guid: dbc388599e474f3428c259509ef08bb4, type: 3}
-  shotgunWeapon: {fileID: 11400000, guid: 906d985030b87ad4685f98a8fe8cd192, type: 2}
+  shotgunWeapon: {fileID: 0}
   spawnInterval: 8
   areaCenter: {x: 0, y: 0}
   areaSize: {x: 33.45, y: 18.2}

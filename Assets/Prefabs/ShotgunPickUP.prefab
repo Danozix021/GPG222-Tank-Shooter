@@ -30,7 +30,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0.5355835, y: -0.43862092, z: 0}
-  m_LocalScale: {x: 1.79, y: 1.79, z: 1.79}
+  m_LocalScale: {x: 0.14, y: 0.14, z: 0.14}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
@@ -79,7 +79,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 78962bb49adc39947a1479995e741412, type: 3}
+  m_Sprite: {fileID: 4636575415492346246, guid: cbddb459e65c57547b560dc82d2ba114, type: 3}
   m_Color: {r: 0.46925062, g: 0.80904377, b: 0.8962264, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -138,7 +138,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 2030039790
+  GlobalObjectIdHash: 12435332
   InScenePlacedSourceGlobalObjectIdHash: 808472376
   DeferredDespawnTick: 0
   Ownership: 1
