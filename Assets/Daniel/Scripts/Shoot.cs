@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using Unity.Netcode;
 using System.Collections;
 
@@ -12,6 +12,11 @@ public class Shoot : NetworkBehaviour
 
     [Header("References")]
     public Transform firePoint;
+
+    [Header("Audio")]
+    public AudioSource audioSource;
+    public AudioClip shotgunSound;
+    public AudioClip defaultGunSound;
 
     private float nextFireTime = 0f;
     private Coroutine weaponResetCoroutine;
@@ -35,7 +40,27 @@ public class Shoot : NetworkBehaviour
         if (Time.time >= nextFireTime)
         {
             nextFireTime = Time.time + (1f / currentWeapon.fireRate);
+
+            //Play correct sound
+            PlayShootSound();
+
             ShootRpc();
+        }
+    }
+
+    private void PlayShootSound()
+    {
+        if (audioSource == null) return;
+
+        audioSource.pitch = Random.Range(0.95f, 1.05f);
+
+        if (currentWeapon == shotgunWeapon && shotgunSound != null)
+        {
+            audioSource.PlayOneShot(shotgunSound);
+        }
+        else if (currentWeapon == defaultWeapon && defaultGunSound != null)
+        {
+            audioSource.PlayOneShot(defaultGunSound);
         }
     }
 
