@@ -41,34 +41,19 @@ public class Shoot : NetworkBehaviour
         {
             nextFireTime = Time.time + (1f / currentWeapon.fireRate);
 
-            //Play correct sound
-            PlayShootSound();
-
-            ShootRpc();
-        }
-    }
-
-    private void PlayShootSound()
-    {
-        if (audioSource == null) return;
-
-        audioSource.pitch = Random.Range(0.95f, 1.05f);
-
-        if (currentWeapon == shotgunWeapon && shotgunSound != null)
-        {
-            audioSource.PlayOneShot(shotgunSound);
-        }
-        else if (currentWeapon == defaultWeapon && defaultGunSound != null)
-        {
-            audioSource.PlayOneShot(defaultGunSound);
+            //Call server(which will spawn bullets + tell everyone to play sound)
+            ShootRpc(currentWeapon.weaponName);
         }
     }
 
     [Rpc(SendTo.Server)]
-    private void ShootRpc()
+    private void ShootRpc(string weaponName)
     {
         if (currentWeapon == null || currentWeapon.bulletPrefab == null || firePoint == null)
             return;
+
+        //Tell ALL clients to play sound
+        PlayShootSoundClientRpc(weaponName);
 
         for (int i = 0; i < currentWeapon.bulletsPerShot; i++)
         {
@@ -91,6 +76,23 @@ public class Shoot : NetworkBehaviour
             {
                 netObj.Spawn();
             }
+        }
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    private void PlayShootSoundClientRpc(string weaponName)
+    {
+        if (audioSource == null) return;
+
+        audioSource.pitch = Random.Range(0.95f, 1.05f);
+
+        if (weaponName == shotgunWeapon.weaponName && shotgunSound != null)
+        {
+            audioSource.PlayOneShot(shotgunSound);
+        }
+        else if (weaponName == defaultWeapon.weaponName && defaultGunSound != null)
+        {
+            audioSource.PlayOneShot(defaultGunSound);
         }
     }
 
