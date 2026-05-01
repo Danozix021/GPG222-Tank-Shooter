@@ -2,7 +2,7 @@
 using Unity.Netcode;
 using UnityEngine.SceneManagement;
 
-public class PauseManager : NetworkBehaviour
+public class PauseManager : MonoBehaviour
 {
     public GameObject menuUI;
 
@@ -10,28 +10,18 @@ public class PauseManager : NetworkBehaviour
 
     void Update()
     {
-        //Works for BOTH host and client
+        //Only run if this instance is a client(host = also client)
         if (!NetworkManager.Singleton.IsClient) return;
 
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            TogglePauseServerRpc();
+            TogglePause();
         }
     }
 
-    //Toggle pause from client - server
-    [ServerRpc(RequireOwnership = false)]
-    private void TogglePauseServerRpc()
+    private void TogglePause()
     {
         isPaused = !isPaused;
-        TogglePauseClientRpc(isPaused);
-    }
-
-    //Apply pause to everyone
-    [ClientRpc]
-    private void TogglePauseClientRpc(bool pauseState)
-    {
-        isPaused = pauseState;
 
         if (menuUI != null)
             menuUI.SetActive(isPaused);
@@ -39,60 +29,33 @@ public class PauseManager : NetworkBehaviour
         Time.timeScale = isPaused ? 0f : 1f;
     }
 
-    //Resume button
     public void ResumeGame()
     {
-        TogglePauseServerRpc();
+        TogglePause();
     }
 
-    //Restart button
-    //public void RestartGame()
-    //{
-    //    RestartGameServerRpc();
-    //}
-
-    [ServerRpc(RequireOwnership = false)]
-    private void RestartGameServerRpc()
-    {
-        RestartGameClientRpc();
-    }
-
-    [ClientRpc]
-    private void RestartGameClientRpc()
-    {
-        Time.timeScale = 1f;
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-    }
-
-    //Quit button
+    /*  public void RestartGame()
+      {
+          Time.timeScale = 1f;
+          SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+      }
+     */
     public void QuitGame()
     {
-        QuitGameServerRpc();
-    }
-
-    [ServerRpc(RequireOwnership = false)]
-    private void QuitGameServerRpc()
-    {
-        QuitGameClientRpc();
-    }
-
-    [ClientRpc]
-    private void QuitGameClientRpc()
-    {
-        Debug.Log("Game Quit");
+        Debug.Log("Closing game for this player");
 
         Time.timeScale = 1f;
 
-        //Shutdown network 
+        //Disconnect THIS player only
         if (NetworkManager.Singleton != null)
         {
             NetworkManager.Singleton.Shutdown();
         }
 
 #if UNITY_EDITOR
-        UnityEditor.EditorApplication.isPlaying = false; // Stops play mode in Unity
+        UnityEditor.EditorApplication.isPlaying = false; //Stops play mode
 #else
-        Application.Quit(); // Closes build
+    Application.Quit(); //FULLY closes the game build
 #endif
     }
 }
