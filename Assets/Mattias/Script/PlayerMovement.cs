@@ -48,6 +48,11 @@ public class PlayerMovement : NetworkBehaviour
     {
         if (!IsOwner) return;
 
+        if (cam == null)
+        {
+            cam = Camera.main;
+        }
+
         //Movement input
         float x = Input.GetAxis("Horizontal");
         float y = Input.GetAxis("Vertical");

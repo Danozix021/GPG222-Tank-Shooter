@@ -17,29 +17,51 @@ public class RelayManager : MonoBehaviour
     public string currentJoinCode = "";
     public bool showCode = false;
 
-    private void Awake()
+    private async void Awake()
     {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
         Instance = this;
+        DontDestroyOnLoad(gameObject);
+
+        await InitializeUnityServices();
     }
 
-    async void Start()
+    private async Task InitializeUnityServices()
     {
-        await UnityServices.InitializeAsync();
-        await AuthenticationService.Instance.SignInAnonymouslyAsync();
+        if (UnityServices.State == ServicesInitializationState.Initialized)
+            return;
 
-        NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnect;
+        await UnityServices.InitializeAsync();
+
+        if (!AuthenticationService.Instance.IsSignedIn)
+        {
+            await AuthenticationService.Instance.SignInAnonymouslyAsync();
+        }
+    }
+
+    private void Start()
+    {
+        if (NetworkManager.Singleton != null)
+        {
+            NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnect;
+        }
     }
 
     private void OnDestroy()
     {
         if (NetworkManager.Singleton != null)
+        {
             NetworkManager.Singleton.OnClientDisconnectCallback -= OnClientDisconnect;
+        }
     }
 
-    //HOST MIGRATION
     private void OnClientDisconnect(ulong clientId)
     {
-        //If HOST disconnects
         if (clientId == 0 && NetworkManager.Singleton.IsServer)
         {
             Debug.Log("HOST LEFT - starting migration...");
@@ -49,9 +71,7 @@ public class RelayManager : MonoBehaviour
             if (remainingClients.Count > 0)
             {
                 ulong newHostId = remainingClients[0];
-
                 Debug.Log("NEW HOST WILL BE: " + newHostId);
-
                 PromoteNewHost(newHostId);
             }
         }
@@ -59,23 +79,16 @@ public class RelayManager : MonoBehaviour
 
     private async void PromoteNewHost(ulong newHostId)
     {
-        //Shutdown current session
         NetworkManager.Singleton.Shutdown();
-
-        //Small delay to ensure cleanup
         await Task.Delay(1000);
-
-        //New host creates a NEW relay session
         await CreateRelay();
     }
 
-    //RELAY
     public async Task CreateRelay()
     {
-        Allocation allocation = await RelayService.Instance.CreateAllocationAsync(2);
+        Allocation allocation = await RelayService.Instance.CreateAllocationAsync(4);
 
         currentJoinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
-
         showCode = true;
 
         Debug.Log("NEW JOIN CODE: " + currentJoinCode);
@@ -107,9 +120,9 @@ public class RelayManager : MonoBehaviour
         NetworkManager.Singleton.StartClient();
     }
 
-    void Update()
+    private void Update()
     {
-        if (!NetworkManager.Singleton.IsListening) return;
+        if (NetworkManager.Singleton == null || !NetworkManager.Singleton.IsListening) return;
 
         int playerCount = NetworkManager.Singleton.ConnectedClients.Count;
 
