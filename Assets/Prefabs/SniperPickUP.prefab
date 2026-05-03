@@ -164,5 +164,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  weaponToGive: {fileID: 11400000, guid: cf101b9cdf557fa4188a9a16cadfa9a8, type: 2}
-  duration: 3
+  weaponToGive: {fileID: 11400000, guid: 825e0276f4ca2644ab61e78fad7ee730, type: 2}
+  duration: 5

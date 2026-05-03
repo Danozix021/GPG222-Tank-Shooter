@@ -7,6 +7,7 @@ public class Shoot : NetworkBehaviour
     [Header("Weapons")]
     public WeaponData defaultWeapon;
     public WeaponData shotgunWeapon;
+    public WeaponData sniperWeapon;
 
     [HideInInspector] public WeaponData currentWeapon;
 
@@ -134,6 +135,10 @@ public class Shoot : NetworkBehaviour
 
         if (shotgunWeapon != null && shotgunWeapon.weaponName == weaponName)
             return shotgunWeapon;
+
+        if (sniperWeapon != null && sniperWeapon.weaponName == weaponName)
+            return sniperWeapon;
+
 
         return null;
     }

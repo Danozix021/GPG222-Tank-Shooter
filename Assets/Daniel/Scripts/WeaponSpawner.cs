@@ -1,11 +1,10 @@
 using UnityEngine;
 using Unity.Netcode;
 
-public class WeaponPickupSpawner : NetworkBehaviour
+public class WeaponSpawner : NetworkBehaviour
 {
-    [Header("Pickup")]
-    public GameObject pickupPrefab;
-    public WeaponData shotgunWeapon;
+    [Header("Pickup Prefabs")]
+    public GameObject[] pickupPrefabs;
     public float spawnInterval = 8f;
 
     [Header("Spawn Area")]
@@ -14,7 +13,7 @@ public class WeaponPickupSpawner : NetworkBehaviour
 
     [Header("Spawn Checking")]
     public float checkRadius = 0.5f;
-    public int maxSpawnAttempts = 25;
+    public int maxSpawnAttempts = 20;
 
     private NetworkObject currentPickup;
 
@@ -32,29 +31,41 @@ public class WeaponPickupSpawner : NetworkBehaviour
         if (currentPickup != null && currentPickup.IsSpawned)
             return;
 
-        Vector2 spawnPos;
-        bool foundValidSpot = TryGetValidSpawnPosition(out spawnPos);
+        if (pickupPrefabs == null || pickupPrefabs.Length == 0)
+        {
+            Debug.LogError("No pickup prefabs assigned to WeaponPickupSpawner.");
+            return;
+        }
 
-        if (!foundValidSpot)
+        Vector2 spawnPos;
+
+        if (!TryGetValidSpawnPosition(out spawnPos))
         {
             Debug.LogWarning("Could not find a valid pickup spawn position.");
             return;
         }
 
-        GameObject pickupObj = Instantiate(pickupPrefab, new Vector3(spawnPos.x, spawnPos.y, 0f), Quaternion.identity );
+        GameObject chosenPrefab = pickupPrefabs[Random.Range(0, pickupPrefabs.Length)];
 
-        WeaponPickup pickup = pickupObj.GetComponent<WeaponPickup>();
-        if (pickup != null)
-        {
-            pickup.weaponToGive = shotgunWeapon;
-        }
+        GameObject pickupObj = Instantiate(
+            chosenPrefab,
+            new Vector3(spawnPos.x, spawnPos.y, 0f),
+            Quaternion.identity
+        );
 
         NetworkObject netObj = pickupObj.GetComponent<NetworkObject>();
-        if (netObj != null)
+
+        if (netObj == null)
         {
-            netObj.Spawn();
-            currentPickup = netObj;
+            Debug.LogError("Chosen pickup prefab is missing NetworkObject.");
+            Destroy(pickupObj);
+            return;
         }
+
+        netObj.Spawn();
+        currentPickup = netObj;
+
+        Debug.Log("Spawned pickup prefab: " + chosenPrefab.name);
     }
 
     private bool TryGetValidSpawnPosition(out Vector2 validPosition)
@@ -66,7 +77,7 @@ public class WeaponPickupSpawner : NetworkBehaviour
 
             Vector2 testPosition = new Vector2(x, y);
 
-            if (!IsInsideWall(testPosition))
+            if (!IsBlocked(testPosition))
             {
                 validPosition = testPosition;
                 return true;
@@ -77,13 +88,13 @@ public class WeaponPickupSpawner : NetworkBehaviour
         return false;
     }
 
-    private bool IsInsideWall(Vector2 position)
+    private bool IsBlocked(Vector2 position)
     {
         Collider2D[] hits = Physics2D.OverlapCircleAll(position, checkRadius);
 
         foreach (Collider2D hit in hits)
         {
-            if (hit.CompareTag("Wall"))
+            if (hit.CompareTag("Wall") || hit.CompareTag("Player"))
             {
                 return true;
             }
@@ -97,5 +108,7 @@ public class WeaponPickupSpawner : NetworkBehaviour
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireCube(areaCenter, areaSize);
 
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(areaCenter, checkRadius);
     }
 }
