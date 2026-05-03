@@ -17,6 +17,7 @@ public class Shoot : NetworkBehaviour
     [Header("Audio")]
     public AudioSource audioSource;
     public AudioClip shotgunSound;
+    public AudioClip sniperSound;
     public AudioClip defaultGunSound;
 
     private float nextFireTime = 0f;
@@ -91,6 +92,12 @@ public class Shoot : NetworkBehaviour
         {
             audioSource.PlayOneShot(shotgunSound);
         }
+
+        else if (weaponName == sniperWeapon.weaponName && sniperSound != null)
+        {
+            audioSource.PlayOneShot(sniperSound);
+        }
+
         else if (weaponName == defaultWeapon.weaponName && defaultGunSound != null)
         {
             audioSource.PlayOneShot(defaultGunSound);

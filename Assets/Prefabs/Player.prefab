@@ -309,6 +309,7 @@ MonoBehaviour:
   firePoint: {fileID: 481184557210063123}
   audioSource: {fileID: -2293286910706549001}
   shotgunSound: {fileID: 8300000, guid: 668570ed457d2db4b888e9192075bc56, type: 3}
+  sniperSound: {fileID: 8300000, guid: 67197ee9dad629c478c6405eb012b187, type: 3}
   defaultGunSound: {fileID: 8300000, guid: c1521ab9e471c9a48b5fc9e763a7c70c, type: 3}
 --- !u!114 &4755401824265038193
 MonoBehaviour:
